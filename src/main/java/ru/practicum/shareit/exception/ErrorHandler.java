@@ -13,7 +13,7 @@ import javax.validation.ValidationException;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoPermissionException(final NoPermissionException e) {
         log.info("User have no permissions: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
@@ -34,17 +34,52 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException e) {
+        log.info("Booking not found: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         log.info("Validation: {}", e.getMessage());
-        return  new ErrorResponse(e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailAlreadyExistException(final EmailAlreadyExistException e) {
         log.info("Email Already Exist: {}", e.getMessage());
-        return  new ErrorResponse(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalStateException(final IllegalStateException e) {
+        log.info("Illegal State: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalStatusException(final IllegalStatusException e) {
+        log.info("Illegal Status parameter: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidBookingTimeException(final InvalidBookingTimeException e) {
+        log.info("Invalid booking time(-s): {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnavailableException(final UnavailableException e) {
+        log.info("Item unavailable: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
 }

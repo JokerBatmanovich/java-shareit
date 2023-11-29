@@ -27,7 +27,7 @@ public class ItemMemoryRepository implements ItemRepository {
     }
 
     @Override
-    public List<Item> getByUserId(Long userId) {
+    public List<Item> getByOwnerId(Long userId) {
         List<Item> listToReturn = new ArrayList<>();
         items.values()
                 .forEach(item -> {
@@ -43,20 +43,11 @@ public class ItemMemoryRepository implements ItemRepository {
         item.setId(idCounter);
         items.put(idCounter++, item);
         return item;
-        /*
-            Я возвращал экземпляр из хранилища для полноценной проверки правильности добавленного объекта,чтобы
-            полноценно убедиться в том, что он добавился корректно.
-        */
     }
 
     @Override
     public Item update(Item updItem) {
         Item item = getById(updItem.getId());
-        /*
-            В методе обновления я никак не смогу избавиться от обращения к БД. Мне нужно взять существующий объект,
-            чтобы в конце вернуть его полную обновленную версию, т.к., согласно Postman-тестам, нам на обновление могут
-            приходить отдельные поля (только имя или только e-mail).
-        */
         if (updItem.getName() != null) {
             items.get(updItem.getId()).setName(updItem.getName());
             item.setName(updItem.getName());

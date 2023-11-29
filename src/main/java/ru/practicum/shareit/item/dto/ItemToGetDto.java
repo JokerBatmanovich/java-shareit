@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.item.Create;
+import ru.practicum.shareit.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class ItemToGetDto {
     private Long id;
     @NotBlank(groups = {Create.class},  message = "Название вещи не должно быть пустым.")
     String name;

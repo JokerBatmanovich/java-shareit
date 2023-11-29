@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.repository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.EmailAlreadyExistException;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.exception.UserNotFoundException;
 
 import java.util.ArrayList;
@@ -50,17 +50,12 @@ public class UserMemoryRepository implements UserRepository {
         });
         newUser.setId(idCounter);
         users.put(idCounter++, newUser);
-        return newUser;// Я возвращал экземпляр из хранилища для полноценной проверки правильности добавленного объекта,
-    }                  // чтобы полноценно убедиться в том, что объект добавился корректно.
+        return newUser;
+    }
 
     @Override
     public User update(User updUser) {
         User oldUser = getById(updUser.getId());
-        /*
-            В методе обновления я никак не смогу избавиться от обращения к БД. Мне нужно взять существующий объект,
-            чтобы вконце вернуть его полную обновленную версию, т.к., согласно Postman-тестам, нам на обновление могут
-            приходить отдельные поля (только имя или только e-mail).
-        */
         users.values()
                 .forEach(user -> {
                     if (user.getEmail().equalsIgnoreCase(updUser.getEmail()) && !updUser.getId().equals(user.getId())) {

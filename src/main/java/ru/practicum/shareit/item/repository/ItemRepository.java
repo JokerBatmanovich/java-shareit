@@ -9,7 +9,7 @@ public interface ItemRepository {
 
     List<Item> getAll();
 
-    List<Item> getByUserId(Long userId);
+    List<Item> getByOwnerId(Long userId);
 
     Item add(Item item);
 
