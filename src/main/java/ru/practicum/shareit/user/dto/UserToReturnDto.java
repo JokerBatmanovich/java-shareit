@@ -2,9 +2,8 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserToReturnDto {

@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Builder
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +27,6 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+    @Column
+    private Long requestId;
 }

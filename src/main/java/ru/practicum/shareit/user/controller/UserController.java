@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import ru.practicum.shareit.exception.InvalidIdException;
 import ru.practicum.shareit.user.dto.UserToGetDto;
 import ru.practicum.shareit.user.dto.UserToReturnDto;
@@ -30,23 +31,24 @@ public class UserController {
         return userService.getById(userId);
     }
 
-    @DeleteMapping("/{userId}")
-    public void delete(@PathVariable Long userId) {
-        userService.delete(userId);
-    }
-
     @PostMapping()
     public UserToReturnDto add(@RequestBody @Validated({Create.class}) UserToGetDto userToGetDto) {
         return userService.add(userToGetDto);
     }
 
     @PatchMapping("/{userId}")
-    public UserToReturnDto update(@RequestBody UserToGetDto userToGetDto, @PathVariable Long userId) {
+    public UserToReturnDto update(@RequestBody @Validated({Update.class}) UserToGetDto userToGetDto,
+                                  @PathVariable Long userId) {
         if (userToGetDto.getId() != null && !userToGetDto.getId().equals(userId)) {
             throw new InvalidIdException("ID тела запроса не совпадает с ID из параметров.");
         }
         userToGetDto.setId(userId);
         return userService.update(userToGetDto, userId);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 
 }

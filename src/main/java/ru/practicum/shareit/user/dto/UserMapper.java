@@ -8,25 +8,33 @@ import java.util.List;
 
 @Component
 public class UserMapper {
-    public UserToReturnDto toUserToReturnDto(User user) {
+    public UserToReturnDto toReturnDto(User user) {
         return new UserToReturnDto(user.getId(),
                 user.getName(),
                 user.getEmail()
         );
     }
 
-    public List<UserToReturnDto> toUserToReturnDtoList(List<User> usersList) {
+    public List<UserToReturnDto> toReturnDtoList(List<User> usersList) {
         List<UserToReturnDto> listToReturn = new ArrayList<>();
-        usersList.forEach(user -> listToReturn.add(toUserToReturnDto(user)));
+        usersList.forEach(user -> listToReturn.add(toReturnDto(user)));
         return listToReturn;
     }
 
 
-    public User toUser(UserToGetDto userDto) {
+    public User toEntity(UserToGetDto userToGetDto) {
         return new User(
-                userDto.getId(),
-                userDto.getName(),
-                userDto.getEmail()
+                userToGetDto.getId(),
+                userToGetDto.getName(),
+                userToGetDto.getEmail()
+        );
+    }
+
+    public User toEntity(UserToReturnDto userToReturnDto) {
+        return new User(
+                userToReturnDto.getId(),
+                userToReturnDto.getName(),
+                userToReturnDto.getEmail()
         );
     }
 

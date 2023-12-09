@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class CommentMapper {
 
-    public Comment toComment(CommentToGetDto commentToGetDto, User author, Item item) {
+    public Comment toEntity(CommentToGetDto commentToGetDto, User author, Item item) {
         Comment comment = new Comment();
         comment.setText(commentToGetDto.getText());
         comment.setItem(item);
@@ -21,13 +21,13 @@ public class CommentMapper {
         return comment;
     }
 
-    public List<CommentToReturnDto> toCommentToReturnDtoList(List<Comment> commentsList) {
+    public List<CommentToReturnDto> toReturnDtoList(List<Comment> commentsList) {
         List<CommentToReturnDto> listToReturn = new ArrayList<>();
-        commentsList.forEach(comment -> listToReturn.add(toCommentToReturnDto(comment)));
+        commentsList.forEach(comment -> listToReturn.add(toReturnDto(comment)));
         return listToReturn;
     }
 
-    public CommentToReturnDto toCommentToReturnDto(Comment comment) {
+    public CommentToReturnDto toReturnDto(Comment comment) {
         return new CommentToReturnDto(comment.getId(),
                                       comment.getText(),
                                       comment.getAuthor().getName(),

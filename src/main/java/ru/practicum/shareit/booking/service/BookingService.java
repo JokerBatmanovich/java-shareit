@@ -9,13 +9,11 @@ public interface BookingService {
 
     BookingToReturnDto getById(Long bookingId, Long userid);
 
-    List<BookingToReturnDto> getBookingsByState(String state, Long userId);
+    List<BookingToReturnDto> getBookingsByState(String state, Long userId, Integer from, Integer size);
 
-    List<BookingToReturnDto> getUserItemsBookingsByState(String state, Long userId);
+    List<BookingToReturnDto> getUserItemsBookingsByState(String state, Long userId, Integer from, Integer size);
 
     BookingToReturnDto add(BookingToGetDto bookingGetDto, Long userId, Long itemId);
 
     BookingToReturnDto update(BookingToGetDto bookingGetDto, Long userId, Long bookingId, Boolean approved);
-
-    void deleteById(Long bookingId, Long userId);
 }

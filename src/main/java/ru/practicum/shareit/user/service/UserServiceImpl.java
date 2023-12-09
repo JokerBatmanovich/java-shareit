@@ -23,28 +23,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserToReturnDto getById(Long userId) {
-        return userMapper.toUserToReturnDto(checkUserExistence(userId));
+        return userMapper.toReturnDto(checkUserExistence(userId));
     }
 
     @Override
     public List<UserToReturnDto> getAll() {
-        return userMapper.toUserToReturnDtoList(userRepository.findAll());
+        return userMapper.toReturnDtoList(userRepository.findAll());
+    }
+
+    @Override
+    public UserToReturnDto add(UserToGetDto user) {
+        try {
+            return userMapper.toReturnDto(userRepository.save(userMapper.toEntity(user)));
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailAlreadyExistException(user.getEmail());
+        }
     }
 
     @Override
     public void delete(Long userId) {
         userRepository.deleteById(userId);
     }
-
-    @Override
-    public UserToReturnDto add(UserToGetDto user) {
-        try {
-            return userMapper.toUserToReturnDto(userRepository.save(userMapper.toUser(user)));
-        } catch (DataIntegrityViolationException e) {
-            throw new EmailAlreadyExistException(user.getEmail());
-        }
-    }
-
 
     @Override
     public UserToReturnDto update(UserToGetDto newUser, Long userId) {
@@ -58,10 +57,8 @@ public class UserServiceImpl implements UserService {
         if (newUser.getEmail() != null) {
             oldUser.setEmail(newUser.getEmail());
         }
-        return userMapper.toUserToReturnDto(userRepository.save(oldUser));
+        return userMapper.toReturnDto(userRepository.save(oldUser));
     }
-
-
 
     private User checkUserExistence(Long userId) {
         try {
@@ -71,6 +68,5 @@ public class UserServiceImpl implements UserService {
         } catch (EntityNotFoundException e) {
             throw new UserNotFoundException(userId);
         }
-
     }
 }

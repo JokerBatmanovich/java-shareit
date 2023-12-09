@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "name ForSeaRch",
+    "description": "description",
+    "available": true
+  },
+  {
+    "id": 3,
+    "name": "name3",
+    "description": "description foRSearch",
+    "available": true
+  },
+  {
+  "id": 4,
+  "name": "name notForSearhc",
+  "description": "description foRSearch",
+  "available": true
+  }
+]

@@ -6,17 +6,17 @@ import ru.practicum.shareit.comment.dto.CommentToReturnDto;
 
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemToReturnDto {
     private Long id;
-    String name;
-    String description;
-    Boolean available;
-    BookingForItemDto lastBooking;
-    BookingForItemDto nextBooking;
-    List<CommentToReturnDto> comments;
+    private String name;
+    private String description;
+    private Boolean available;
+    private BookingForItemDto lastBooking;
+    private BookingForItemDto nextBooking;
+    private Long requestId;
+    private List<CommentToReturnDto> comments;
 }

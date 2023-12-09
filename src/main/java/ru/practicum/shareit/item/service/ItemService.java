@@ -9,13 +9,11 @@ public interface ItemService {
 
     ItemToReturnDto getById(Long itemId, Long userId);
 
-    List<ItemToReturnDto> getByOwnerId(Long userId);
+    List<ItemToReturnDto> getByOwnerId(Long userId, Integer from, Integer size);
 
     ItemToReturnDto add(ItemToGetDto itemToGetDto, Long userId);
 
-    ItemToReturnDto update(ItemToGetDto itemToGetDto, Long userId);
+    ItemToReturnDto update(ItemToGetDto itemToGetDto, Long itemId, Long userId);
 
-    void deleteById(Long itemId, Long userId);
-
-    List<ItemToReturnDto> search(String text);
+    List<ItemToReturnDto> search(String text, Integer from, Integer size);
 }

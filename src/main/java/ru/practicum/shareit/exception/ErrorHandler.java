@@ -28,6 +28,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException e) {
+        log.info("Item request not found: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         log.info("User not found: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
@@ -79,6 +86,13 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUnavailableException(final UnavailableException e) {
         log.info("Item unavailable: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidIdException(final InvalidIdException e) {
+        log.info("Invalid id: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 

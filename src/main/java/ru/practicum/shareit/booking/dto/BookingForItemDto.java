@@ -4,14 +4,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingForItemDto {
-    Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Long bookerId;
+    private Long id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long bookerId;
 }

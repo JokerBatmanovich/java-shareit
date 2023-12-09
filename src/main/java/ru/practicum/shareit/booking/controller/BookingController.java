@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.dto.BookingToReturnDto;
 import ru.practicum.shareit.booking.dto.BookingToGetDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -26,14 +27,18 @@ public class BookingController {
 
     @GetMapping
     public List<BookingToReturnDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @RequestParam(name = "state", defaultValue = "ALL") String state) {
-        return bookingService.getBookingsByState(state, userId);
+                            @RequestParam(name = "state", defaultValue = "ALL") String state,
+                            @RequestParam (name = "from", defaultValue = "0") @Min(0) Integer from,
+                            @RequestParam (name = "size", defaultValue = "10") @Min(1) Integer size) {
+        return bookingService.getBookingsByState(state, userId, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingToReturnDto> getUserItemsBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @RequestParam(name = "state", defaultValue = "ALL") String state) {
-        return bookingService.getUserItemsBookingsByState(state, userId);
+                            @RequestParam(name = "state", defaultValue = "ALL") String state,
+                            @RequestParam (name = "from", defaultValue = "0") @Min(0) Integer from,
+                            @RequestParam (name = "size", defaultValue = "10") @Min(1) Integer size) {
+        return bookingService.getUserItemsBookingsByState(state, userId, from, size);
     }
 
     @PostMapping()
@@ -49,4 +54,6 @@ public class BookingController {
                                      @RequestBody(required = false) BookingToGetDto bookingToGetDto) {
         return bookingService.update(bookingToGetDto, userId, bookingId, approved);
     }
+
+
 }

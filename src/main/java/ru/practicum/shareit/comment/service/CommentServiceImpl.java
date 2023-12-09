@@ -28,25 +28,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentToReturnDto getById(Long commentId) {
-        return commentMapper.toCommentToReturnDto(checkCommentExistence(commentId));
+        return commentMapper.toReturnDto(checkCommentExistence(commentId));
     }
 
     @Override
     public CommentToReturnDto add(CommentToGetDto comment, Long userId, Long itemId) {
         User author = checkUserExistence(userId);
         Item item = checkItemExistence(itemId);
+        if (item.getOwner().getId().equals(author.getId())) {
+            throw new UnavailableException("Нельзя прокомментировать вещь, которой Вы владеете");
+        }
         if (bookingRepository.findAllSuccessfulBookings(userId, itemId).isEmpty()) {
             throw new UnavailableException("Нельзя прокомментировать вещь, которую не бронировали.");
         }
-        return commentMapper.toCommentToReturnDto(
-                commentRepository.save(commentMapper.toComment(comment, author, item)));
-    }
-
-    @Override
-    public void delete(Long commentId, Long userId) {
-        Comment comment = checkCommentExistence(commentId);
-        checkUserPermissions(comment, userId);
-        commentRepository.deleteById(commentId);
+        return commentMapper.toReturnDto(
+                commentRepository.save(commentMapper.toEntity(comment, author, item)));
     }
 
     private User checkUserExistence(Long userId) {
@@ -80,9 +76,4 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    private void checkUserPermissions(Comment comment, Long userId) {
-        if (!comment.getAuthor().getId().equals(userId)) {
-            throw new NoPermissionException(userId);
-        }
-    }
 }
