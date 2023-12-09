@@ -1,12 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Create;
 import ru.practicum.shareit.exception.InvalidIdException;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserToGetDto;
+import ru.practicum.shareit.user.dto.UserToReturnDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
@@ -14,21 +15,19 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @Validated
-@Slf4j
 @RequiredArgsConstructor
 public class UserController {
     @Qualifier("userServiceImpl")
     final UserService userService;
-    final UserMapper userMapper;
 
     @GetMapping
-    public List<UserDto> getAll() {
-        return userMapper.toUserDtoList(userService.getAll());
+    public List<UserToReturnDto> getAll() {
+        return userService.getAll();
     }
 
     @GetMapping("/{userId}")
-    public UserDto get(@PathVariable Long userId) {
-        return userMapper.toUserDto(userService.getById(userId));
+    public UserToReturnDto get(@PathVariable Long userId) {
+        return userService.getById(userId);
     }
 
     @DeleteMapping("/{userId}")
@@ -37,18 +36,17 @@ public class UserController {
     }
 
     @PostMapping()
-    public UserDto add(@RequestBody @Validated({Create.class}) UserDto userDto) {
-        return userMapper.toUserDto(userService.add(userMapper.toUser(userDto)));
+    public UserToReturnDto add(@RequestBody @Validated({Create.class}) UserToGetDto userToGetDto) {
+        return userService.add(userToGetDto);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto update(@RequestBody UserDto userDto, @PathVariable Long userId) {
-        if (userDto.getId() == null || userDto.getId().equals(userId)) {
-            userDto.setId(userId);
-        } else {
+    public UserToReturnDto update(@RequestBody UserToGetDto userToGetDto, @PathVariable Long userId) {
+        if (userToGetDto.getId() != null && !userToGetDto.getId().equals(userId)) {
             throw new InvalidIdException("ID тела запроса не совпадает с ID из параметров.");
         }
-        return userMapper.toUserDto(userService.update(userMapper.toUser(userDto)));
+        userToGetDto.setId(userId);
+        return userService.update(userToGetDto, userId);
     }
 
 }

@@ -2,7 +2,7 @@ package ru.practicum.shareit.request.repository;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.HashMap;
 

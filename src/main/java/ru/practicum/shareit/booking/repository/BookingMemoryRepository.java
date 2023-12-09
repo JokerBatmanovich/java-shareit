@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.repository;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.BookingNotFoundException;
 
 import java.util.ArrayList;
