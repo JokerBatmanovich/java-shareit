@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -41,35 +43,38 @@ public class ItemServiceImpl implements ItemService {
         Item item = checkItemExistence(itemId);
 
         List<BookingForItemDto> bookings = item.getOwner().getId().equals(userId)
-                ? bookingMapper.toBookingForItemDtoList(bookingRepository.findAllByItemId(itemId)
+                ? bookingMapper.toForItemDtoList(bookingRepository.findAllByItemId(itemId)
                 .stream()
                 .filter(booking -> !booking.getStatus().equals(Status.REJECTED))
                 .filter(booking -> !booking.getStatus().equals(Status.CANCELED))
                 .collect(Collectors.toList()))
                 : new ArrayList<>();
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
-        return itemMapper.toItemToReturnDto(itemRepository.getReferenceById(itemId),
+        return itemMapper.toReturnDto(itemRepository.getReferenceById(itemId),
                 bookings,
                 comments);
     }
 
     @Override
-    public List<ItemToReturnDto> getByOwnerId(Long userId) {
+    public List<ItemToReturnDto> getByOwnerId(Long userId, Integer from, Integer size) {
         checkUserExistence(userId);
-        return toItemToReturnDtoList(itemRepository.findAllByOwnerIdOrderById(userId));
+        Pageable page = PageRequest.of(from / size, size);
+//        List<Item> items = sublist(itemRepository.findAllByOwnerIdOrderById(userId), from, size);
+        return toItemToReturnDtoList(itemRepository.findAllByOwnerIdOrderById(userId, page));
     }
 
     @Override
     public ItemToReturnDto add(ItemToGetDto newItem, Long userId) {
         User user = checkUserExistence(userId);
-        Item item = itemMapper.toItem(newItem);
+        Item item = itemMapper.toEntity(newItem);
         item.setOwner(user);
-        return itemMapper.toItemToReturnDto(itemRepository.save(item), new ArrayList<>(), new ArrayList<>());
+        return itemMapper.toReturnDto(itemRepository.save(item), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override
-    public ItemToReturnDto update(ItemToGetDto itemToGetDto, Long userId) {
+    public ItemToReturnDto update(ItemToGetDto itemToGetDto, Long itemId, Long userId) {
         checkUserExistence(userId);
+        itemToGetDto.setId(itemId);
         Item oldItem = checkItemExistence(itemToGetDto.getId());
         checkUserPermissions(oldItem, userId);
 
@@ -83,26 +88,21 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(itemToGetDto.getAvailable());
         }
 
-        List<BookingForItemDto> bookings = bookingMapper.toBookingForItemDtoList(
+        List<BookingForItemDto> bookings = bookingMapper.toForItemDtoList(
                 bookingRepository.findAllByItemId(itemToGetDto.getId()));
         List<Comment> comments = commentRepository.findAllByItemId(itemToGetDto.getId());
-        return itemMapper.toItemToReturnDto(itemRepository.save(oldItem), bookings, comments);
+        return itemMapper.toReturnDto(itemRepository.save(oldItem), bookings, comments);
     }
 
     @Override
-    public void deleteById(Long itemId, Long userId) {
-        checkUserExistence(userId);
-        Item item = checkItemExistence(itemId);
-        checkUserPermissions(item, userId);
-        itemRepository.deleteById(itemId);
-        bookingRepository.deleteAllByItemId(itemId);
-    }
-
-    @Override
-    public List<ItemToReturnDto> search(String text) {
-        return !text.isBlank()
-                ? toItemToReturnDtoList(itemRepository.search(text))
-                : new ArrayList<>();
+    public List<ItemToReturnDto> search(String text, Integer from, Integer size) {
+        if (!text.isBlank()) {
+            Pageable page = PageRequest.of(from / size, size);
+            List<Item> items = itemRepository.search(text, page);
+            return toItemToReturnDtoList(items);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     private void checkUserPermissions(Item item, Long userId) {
@@ -141,8 +141,8 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : items) {
             bookings = bookingRepository.findAllByItemId(item.getId());
             comments = commentRepository.findAllByItemId(item.getId());
-            itemToReturnDtoList.add(itemMapper.toItemToReturnDto(item,
-                    bookingMapper.toBookingForItemDtoList(bookings),
+            itemToReturnDtoList.add(itemMapper.toReturnDto(item,
+                    bookingMapper.toForItemDtoList(bookings),
                     comments));
         }
         return itemToReturnDtoList;

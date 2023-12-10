@@ -6,12 +6,13 @@ import ru.practicum.shareit.Update;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@NotNull(groups = {Create.class, Update.class})
 public class UserToGetDto {
     private Long id;
     @NotBlank(groups = {Create.class}, message = "Имя не может быть пустым.")

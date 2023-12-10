@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingToGetDto;
@@ -11,8 +13,8 @@ import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.JpaBookingRepository;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.JpaCommentRepository;
-import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.exception.IllegalStateException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.JpaItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -40,59 +42,61 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> itemBookings = bookingRepository.findAllByItemId(booking.getItem().getId());
         List<Comment> itemComments = commentRepository.findAllByItemId(booking.getItem().getId());
 
-        return bookingMapper.toBookingReturnDto(booking,itemBookings,itemComments);
+        return bookingMapper.toReturnDto(booking,itemBookings,itemComments);
     }
 
     @Override
-    public List<BookingToReturnDto> getBookingsByState(String state, Long userId) {
+    public List<BookingToReturnDto> getBookingsByState(String state, Long userId, Integer from, Integer size) {
         checkUserExistence(userId);
         checkState(state);
         List<Booking> bookings;
+        Pageable page = PageRequest.of(from / size, size);
         switch (state) {
             case "CURRENT":
-                bookings = bookingRepository.findAllUserCurrentBookings(userId);
+                bookings = bookingRepository.findAllUserCurrentBookings(userId, page);
                 break;
             case "PAST":
-                bookings = bookingRepository.findAllUserPastBookings(userId);
+                bookings = bookingRepository.findAllUserPastBookings(userId, page);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllUserFutureBookings(userId);
+                bookings = bookingRepository.findAllUserFutureBookings(userId, page);
                 break;
             case "WAITING":
-                bookings = bookingRepository.findAllUserWaitingBookings(userId);
+                bookings = bookingRepository.findAllUserWaitingBookings(userId, page);
                 break;
             case "REJECTED":
-                bookings = bookingRepository.findAllUserRejectedBookings(userId);
+                bookings = bookingRepository.findAllUserRejectedBookings(userId, page);
                 break;
             default:
-                bookings = bookingRepository.findAllUserBookings(userId);
+                bookings = bookingRepository.findAllUserBookings(userId, page);
         }
         return toBookingToReturnDtoList(bookings);
     }
 
     @Override
-    public List<BookingToReturnDto> getUserItemsBookingsByState(String state, Long userId) {
+    public List<BookingToReturnDto> getUserItemsBookingsByState(String state, Long userId, Integer from, Integer size) {
         checkUserExistence(userId);
         checkState(state);
         List<Booking> bookings;
+        Pageable page = PageRequest.of(from / size, size);
         switch (state) {
             case "CURRENT":
-                bookings = bookingRepository.findAllUserItemsCurrentBookings(userId);
+                bookings = bookingRepository.findAllUserItemsCurrentBookings(userId, page);
                 break;
             case "PAST":
-                bookings = bookingRepository.findAllUserItemsPastBookings(userId);
+                bookings = bookingRepository.findAllUserItemsPastBookings(userId, page);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllUserItemsFutureBookings(userId);
+                bookings = bookingRepository.findAllUserItemsFutureBookings(userId, page);
                 break;
             case "WAITING":
-                bookings = bookingRepository.findAllUserItemsWaitingBookings(userId);
+                bookings = bookingRepository.findAllUserItemsWaitingBookings(userId, page);
                 break;
             case "REJECTED":
-                bookings = bookingRepository.findAllUserItemsRejectedBookings(userId);
+                bookings = bookingRepository.findAllUserItemsRejectedBookings(userId, page);
                 break;
             default:
-                bookings = bookingRepository.findAllUserItemsBookings(userId);
+                bookings = bookingRepository.findAllUserItemsBookings(userId, page);
         }
         return toBookingToReturnDtoList(bookings);
     }
@@ -102,11 +106,11 @@ public class BookingServiceImpl implements BookingService {
         User user = checkUserExistence(userId);
         checkTimes(bookingGetDto);
         Item item = checkAvailability(userId, itemId);
-        Booking booking = bookingMapper.toBooking(bookingGetDto);
+        Booking booking = bookingMapper.toEntity(bookingGetDto);
         booking.setStatus(Status.WAITING);
         booking.setBooker(user);
         booking.setItem(item);
-        return bookingMapper.toBookingReturnDto(bookingRepository.save(booking), new ArrayList<>(), new ArrayList<>());
+        return bookingMapper.toReturnDto(bookingRepository.save(booking), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override
@@ -132,33 +136,29 @@ public class BookingServiceImpl implements BookingService {
             if (newBooking.getEnd() != null) {
                 oldBooking.setEnd(newBooking.getEnd());
             }
-        }
-        if (approved != null) {
-            checkOwnerPermissions(userId, oldBooking);
-            if (approved) {
-                if (!oldBooking.getStatus().equals(Status.APPROVED)) {
-                    oldBooking.setStatus(Status.APPROVED);
+        } else {
+            if (approved != null) {
+                checkOwnerPermissions(userId, oldBooking);
+                if (approved) {
+                    if (!oldBooking.getStatus().equals(Status.APPROVED)) {
+                        oldBooking.setStatus(Status.APPROVED);
+                    } else {
+                        throw new IllegalStatusException("Нельзя поменять статус на такой же.");
+                    }
                 } else {
-                    throw new IllegalStatusException("Нельзя поменять статус на такой же.");
+                    if (!oldBooking.getStatus().equals(Status.REJECTED)) {
+                        oldBooking.setStatus(Status.REJECTED);
+                    } else {
+                        throw new IllegalStatusException("Нельзя поменять статус на такой же.");
+                    }
                 }
             } else {
-                if (!oldBooking.getStatus().equals(Status.REJECTED)) {
-                    oldBooking.setStatus(Status.REJECTED);
-                } else {
-                    throw new IllegalStatusException("Нельзя поменять статус на такой же.");
-                }
+                throw new UnavailableException();
             }
-        } else {
-            throw new UnavailableException();
         }
         List<Comment> comments = commentRepository.findAllByItemId(oldBooking.getItem().getId());
         List<Booking> bookings = bookingRepository.findAllByItemId(oldBooking.getItem().getId());
-        return bookingMapper.toBookingReturnDto(bookingRepository.save(oldBooking), bookings, comments);
-    }
-
-    @Override
-    public void deleteById(Long bookingId, Long userId) {
-        bookingRepository.deleteById(bookingId);
+        return bookingMapper.toReturnDto(bookingRepository.save(oldBooking), bookings, comments);
     }
 
     private void checkOwnerPermissions(Long ownerId, Booking booking) {
@@ -238,7 +238,7 @@ public class BookingServiceImpl implements BookingService {
         for (Booking booking : bookings) {
             itemComments = commentRepository.findAllByItemId(booking.getItem().getId());
             itemBookings = bookingRepository.findAllByItemId(booking.getItem().getId());
-            bookingToReturnDto.add(bookingMapper.toBookingReturnDto(booking, itemBookings, itemComments));
+            bookingToReturnDto.add(bookingMapper.toReturnDto(booking, itemBookings, itemComments));
         }
         return bookingToReturnDto;
     }

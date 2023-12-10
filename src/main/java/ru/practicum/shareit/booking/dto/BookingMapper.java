@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.dto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemToReturnDto;
@@ -16,16 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingMapper {
     final ItemMapper itemMapper;
-    final CommentMapper commentMapper;
 
-    public BookingToGetDto toBookingDto(Booking booking) {
-        return new BookingToGetDto(booking.getId(),
-                booking.getItem().getId(),
-                booking.getStart(),
-                booking.getEnd());
-    }
-
-    public BookingForItemDto toBookingForItemDto(Booking booking) {
+    public BookingForItemDto toForItemDto(Booking booking) {
         return new BookingForItemDto(booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
@@ -33,19 +24,13 @@ public class BookingMapper {
         );
     }
 
-    public List<BookingForItemDto> toBookingForItemDtoList(List<Booking> bookingList) {
+    public List<BookingForItemDto> toForItemDtoList(List<Booking> bookingList) {
         List<BookingForItemDto> listToReturn = new ArrayList<>();
-        bookingList.forEach(booking -> listToReturn.add(toBookingForItemDto(booking)));
+        bookingList.forEach(booking -> listToReturn.add(toForItemDto(booking)));
         return listToReturn;
     }
 
-    public List<BookingToGetDto> toBookingDtoList(List<Booking> bookingList) {
-        List<BookingToGetDto> listToReturn = new ArrayList<>();
-        bookingList.forEach(booking -> listToReturn.add(toBookingDto(booking)));
-        return listToReturn;
-    }
-
-    public Booking toBooking(BookingToGetDto bookingToGetDto) {
+    public Booking toEntity(BookingToGetDto bookingToGetDto) {
         Booking booking = new Booking();
         booking.setId(bookingToGetDto.getId());
         booking.setStart(bookingToGetDto.getStart());
@@ -53,11 +38,11 @@ public class BookingMapper {
         return booking;
     }
 
-    public BookingToReturnDto toBookingReturnDto(Booking booking,
-                                                 List<Booking> itemBookings,
-                                                 List<Comment> itemComments) {
-        ItemToReturnDto itemToReturnDto = itemMapper.toItemToReturnDto(booking.getItem(),
-                                                                       toBookingForItemDtoList(itemBookings),
+    public BookingToReturnDto toReturnDto(Booking booking,
+                                          List<Booking> itemBookings,
+                                          List<Comment> itemComments) {
+        ItemToReturnDto itemToReturnDto = itemMapper.toReturnDto(booking.getItem(),
+                                                                       toForItemDtoList(itemBookings),
                                                                        itemComments);
         itemToReturnDto.setId(booking.getItem().getId());
         itemToReturnDto.setName(booking.getItem().getName());

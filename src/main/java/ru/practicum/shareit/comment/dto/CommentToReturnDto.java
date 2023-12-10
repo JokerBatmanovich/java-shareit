@@ -4,15 +4,14 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentToReturnDto {
-    Long id;
-    String text;
-    String authorName;
-    LocalDateTime created;
+    private Long id;
+    private String text;
+    private String authorName;
+    private LocalDateTime created;
 
 }

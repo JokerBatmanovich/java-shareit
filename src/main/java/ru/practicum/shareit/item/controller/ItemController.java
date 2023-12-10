@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.dto.ItemToGetDto;
 import ru.practicum.shareit.item.dto.ItemToReturnDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -28,18 +29,15 @@ public class ItemController {
 
 
     @GetMapping
-    public List<ItemToReturnDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getByOwnerId(userId);
+    public List<ItemToReturnDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                        @RequestParam (name = "from", defaultValue = "0") @Min(0) Integer from,
+                                        @RequestParam (name = "size", defaultValue = "10") @Min(1) Integer size) {
+        return itemService.getByOwnerId(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
     public ItemToReturnDto get(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
         return itemService.getById(itemId, userId);
-    }
-
-    @DeleteMapping("/{itemId}")
-    public void delete(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
-        itemService.deleteById(itemId, userId);
     }
 
     @PostMapping()
@@ -51,13 +49,12 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemToReturnDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                               @Validated({Update.class}) @RequestBody ItemToGetDto itemToGetDto,
-                               @PathVariable Long itemId) {
+                                  @Validated({Update.class}) @RequestBody ItemToGetDto itemToGetDto,
+                                  @PathVariable Long itemId) {
         if (itemToGetDto.getId() != null && !itemToGetDto.getId().equals(itemId)) {
             throw new InvalidIdException("ID тела запроса не совпадает с ID из параметров.");
         }
-        itemToGetDto.setId(itemId);
-        return itemService.update(itemToGetDto, userId);
+        return itemService.update(itemToGetDto, itemId, userId);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -68,7 +65,9 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemToReturnDto> search(@RequestParam(name = "text") String text) {
-        return itemService.search(text);
+    public List<ItemToReturnDto> search(@RequestParam(name = "text", defaultValue = "") String text,
+                                        @RequestParam (name = "from", defaultValue = "0") @Min(0) Integer from,
+                                        @RequestParam (name = "size", defaultValue = "10") @Min(1) Integer size) {
+        return itemService.search(text, from, size);
     }
 }

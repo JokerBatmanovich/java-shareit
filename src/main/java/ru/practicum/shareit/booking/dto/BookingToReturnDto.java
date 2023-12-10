@@ -7,18 +7,17 @@ import ru.practicum.shareit.user.dto.UserToReturnDto;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingToReturnDto implements Comparable<BookingToReturnDto> {
-    Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Status status;
-    ItemToReturnDto item;
-    UserToReturnDto booker;
+    private Long id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Status status;
+    private ItemToReturnDto item;
+    private UserToReturnDto booker;
 
     @Override
     public int compareTo(BookingToReturnDto o) {
