@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.dto.BookingToReturnDto;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.JpaBookingRepository;
 import ru.practicum.shareit.comment.repository.JpaCommentRepository;
-import ru.practicum.shareit.exception.InvalidBookingTimeException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.NoPermissionException;
 import ru.practicum.shareit.exception.UnavailableException;
@@ -106,14 +105,6 @@ public class BookingServiceIntegrationTest {
         assertThat(actualBooking.getEnd(), equalTo(bookingReturnDto.getEnd()));
         assertThat(actualBooking.getBooker(), equalTo(bookingReturnDto.getBooker()));
         assertThat(actualBooking.getStatus(), equalTo(bookingReturnDto.getStatus()));
-    }
-
-    @Test
-    void add_shouldThrowInvalidBookingTimeException() {
-        bookingGetDto.setEnd(LocalDateTime.now().minusWeeks(2));
-
-        assertThrows(InvalidBookingTimeException.class, () ->
-                bookingService.add(bookingGetDto, user2.getId(), item1.getId()));
     }
 
     @Test

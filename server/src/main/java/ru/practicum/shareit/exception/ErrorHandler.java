@@ -52,24 +52,11 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalStateException(final IllegalStateException e) {
-        log.info("Illegal State: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalStatusException(final IllegalStatusException e) {
         log.info("Illegal Status parameter: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidBookingTimeException(final InvalidBookingTimeException e) {
-        log.info("Invalid booking time(-s): {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 

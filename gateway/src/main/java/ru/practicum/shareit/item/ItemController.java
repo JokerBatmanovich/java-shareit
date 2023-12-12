@@ -10,6 +10,7 @@ import ru.practicum.shareit.Update;
 import ru.practicum.shareit.exception.InvalidIdException;
 
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping(path = "/items")
@@ -62,7 +63,7 @@ public class ItemController {
         if (!text.isBlank()) {
             return itemClient.search(text, from, size);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new ArrayList<>(), null, HttpStatus.OK);
         }
     }
 

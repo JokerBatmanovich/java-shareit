@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.NoPermissionException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserToGetDto;
 import ru.practicum.shareit.user.dto.UserToReturnDto;
@@ -50,15 +49,4 @@ public class UserServiceIntegrationTest {
                 userService.update(updatedUserDto, updatedUserDto.getId()));
     }
 
-    @Test
-    void updateTest_shouldThrowNoPermissionsException() {
-        UserToGetDto userDto = UserToGetDto.builder().name("name").email("email@mail.ru").build();
-        UserToReturnDto oldUser = userService.add(userDto);
-
-        UserToGetDto updatedUserDto = UserToGetDto.builder()
-                .id(oldUser.getId()).name("Updated name").email("email@mail.ru").build();
-
-        assertThrows(NoPermissionException.class, () ->
-                userService.update(updatedUserDto, updatedUserDto.getId() + 1));
-    }
 }

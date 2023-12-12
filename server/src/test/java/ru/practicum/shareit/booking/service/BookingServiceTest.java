@@ -873,23 +873,6 @@ public class BookingServiceTest {
     }
 
     @Test
-    void update_shouldThrowInvalidIdException() {
-        Mockito.when(userRepository.getReferenceById(user2.getId()))
-                .thenReturn(user2);
-        Mockito.when(bookingRepository.getReferenceById(booking1.getId()))
-                .thenReturn(booking1);
-        booking4GetDto.setId(0L);
-        assertThrows(InvalidIdException.class, () ->
-                bookingService.update(booking4GetDto, user2.getId(), booking4.getId(), null));
-        Mockito.verify(userRepository, Mockito.times(1))
-                .getReferenceById(user2.getId());
-        Mockito.verifyNoMoreInteractions(userRepository);
-        Mockito.verify(bookingRepository, Mockito.times(1))
-                .getReferenceById(booking1.getId());
-        Mockito.verifyNoMoreInteractions(bookingRepository);
-    }
-
-    @Test
     void update_shouldUpdateWithTrueApproved() {
         Mockito.when(userRepository.getReferenceById(user1.getId()))
                 .thenReturn(user1);

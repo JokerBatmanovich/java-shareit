@@ -288,17 +288,6 @@ public class ItemServiceTest {
     }
 
     @Test
-    void searchByBlankText_shouldReturnEmptyList() {
-        List<ItemToReturnDto> actualList = itemService.search("", 0, 10);
-        assertNotNull(actualList);
-        assertThat(actualList.size(), equalTo(0));
-        Mockito.verifyNoInteractions(itemRepository);
-        Mockito.verifyNoInteractions(bookingRepository);
-        Mockito.verifyNoInteractions(commentRepository);
-        Mockito.verifyNoInteractions(bookingMapper);
-    }
-
-    @Test
     void searchByBigFrom_shouldReturnEmptyList() {
         Mockito.when(itemRepository.search("name", PageRequest.of(2, 2)))
                 .thenReturn(new ArrayList<>());

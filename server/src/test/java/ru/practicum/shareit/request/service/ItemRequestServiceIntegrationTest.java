@@ -40,7 +40,7 @@ public class ItemRequestServiceIntegrationTest {
 
     private ItemRequestToReturnDto request1ReturnDto;
     private ItemRequestToReturnDto request2ReturnDto;
-    private ItemRequestToReturnDto request4ReturnDto;
+    private ItemRequestToReturnDto request3ReturnDto;
 
     @BeforeEach
     void setup() {
@@ -53,13 +53,13 @@ public class ItemRequestServiceIntegrationTest {
         user2 = userMapper.toEntity(user2ReturnDto);
 
         request1ReturnDto = requestService.add(
-                ItemRequestToGetDto.builder().description("request1 descr").build(),  user1.getId());
+                ItemRequestToGetDto.builder().description("request1 descr").build(), user1.getId());
 
         request2ReturnDto = requestService.add(
-                ItemRequestToGetDto.builder().description("request2 descr").build(),  user1.getId());
+                ItemRequestToGetDto.builder().description("request2 descr").build(), user1.getId());
 
-        request4ReturnDto = requestService.add(
-                ItemRequestToGetDto.builder().description("request4 descr").build(), user1.getId());
+        request3ReturnDto = requestService.add(
+                ItemRequestToGetDto.builder().description("request3 descr").build(), user1.getId());
     }
 
     @AfterEach
@@ -72,14 +72,14 @@ public class ItemRequestServiceIntegrationTest {
     void getAll_shouldReturnAllUser2Requests() {
         List<ItemRequestToReturnDto> actualRequestsList = requestService.getAll(user2.getId(), 0, 10);
         assertThat(actualRequestsList.size(), equalTo(3));
-        assertTrue(actualRequestsList.containsAll(List.of(request1ReturnDto, request2ReturnDto, request4ReturnDto)));
+        assertTrue(actualRequestsList.containsAll(List.of(request1ReturnDto, request2ReturnDto, request3ReturnDto)));
     }
 
     @Test
     void getAll_shouldReturnNotFullList() {
         List<ItemRequestToReturnDto> actualRequestsList = requestService.getAll(user2.getId(), 1, 2);
         assertThat(actualRequestsList.size(), equalTo(2));
-        assertTrue(actualRequestsList.containsAll(List.of(request2ReturnDto, request4ReturnDto)));
+        assertTrue(actualRequestsList.containsAll(List.of(request2ReturnDto, request3ReturnDto)));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ItemRequestServiceIntegrationTest {
     void getAll_shouldReturnOneElementList() {
         List<ItemRequestToReturnDto> actualRequestsList = requestService.getAll(user2.getId(), 0, 1);
         assertThat(actualRequestsList.size(), equalTo(1));
-        assertTrue(actualRequestsList.contains(request4ReturnDto));
+        assertTrue(actualRequestsList.contains(request3ReturnDto));
     }
 
     @Test
